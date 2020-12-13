@@ -7,9 +7,8 @@
 cyr=3 #the year column
 cN=4 #the pop size column
 #THESE FILES ARE SAMPLES: THE DATA NEEDS TO BE DOWNLOADED FROM LPI INTO THIS FORM
-tot=readRDS("LPI_dat_sample.rds") 
+tot=read.csv("~/main/Data/Living_planet/LPIdata.csv")
 info<-readRDS("info1.rds")
-
 
 tot=tot[tot[,cyr]>1969 & tot[,cyr]<2015,] 
 
@@ -22,8 +21,6 @@ pos=by(tot,tot$id,function(x){
 })
 pos=pos[!is.na(pos)]
 tot=tot[!(tot$id %in% pos),]
-
-info=info[,c(2,4,7,8,18,20)]
 
 info$Class=as.character(info$Class) 
 info$System=as.character(info$System) 
@@ -47,18 +44,19 @@ info$combo=paste(info$Class,info$System,info$Realm)
 #included is a current file with ids for replicates
 repl<-read.csv("remv_aggr_pops.csv")
 pos=which(info$id %in% repl[,2])
-info=info[-pos,]
+if(length(pos)>0)
+	info=info[-pos,]
 
 #force both datafiles to match
 info=info[which(info$id %in% unique(tot$id)),]
 tot=tot[which(tot$id %in% unique(info$id)),]
 growth_rates=by(tot,tot$id,function(x) #this provides growth rates
 {
-	x=x[order(x$Year),]
 	if(length(which(x[,cN]==0))>0) #need to take care of zeros. Change entire time series, adding 1% of mean
 	{
 		x[,cN]=x[,cN]+0.01*mean(x[,cN])
 	}
+	x=x[order(x$Year),]
 	dur=x$Year[-1]-x$Year[-nrow(x)] 
 	gr<-log(x[-1,cN]/x[-nrow(x),cN])/dur #for non-consecutive years, take mean growth
 	return(gr)})
