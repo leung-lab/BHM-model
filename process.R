@@ -7,7 +7,7 @@
 cyr=3 #the year column
 cN=4 #the pop size column
 #THESE FILES ARE SAMPLES: THE DATA NEEDS TO BE DOWNLOADED FROM LPI INTO THIS FORM
-tot=read.csv("~/main/Data/Living_planet/LPIdata.csv")
+tot<-readRDS("LPI_dat_sample.rds")
 info<-readRDS("info1.rds")
 
 tot=tot[tot[,cyr]>1969 & tot[,cyr]<2015,] 
